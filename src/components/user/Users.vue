@@ -14,7 +14,7 @@
           v-model="queryInfo.query"
           clearable
           @clear="getUserList">
-            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="searchUser"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -210,6 +210,10 @@ export default {
       }
       this.userList = res.data.users
       this.total = res.data.total
+    },
+    searchUser () {
+      this.queryInfo.pagenum = 1
+      this.getUserList()
     },
     // 分页器改变的回调
     handleSizeChange (newSize) {
