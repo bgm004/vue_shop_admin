@@ -6,7 +6,10 @@
         <img src="../assets/logo.png" alt="logo">
         <span>电商后台管理系统</span>
       </div>
-      <el-button type="info" @click="logout"> 退出 </el-button>
+      <div>
+        <span class="user_name">欢迎, {{user_name}}</span>
+        <el-button type="info" @click="logout"> 退出 </el-button>
+      </div>
     </el-header>
     <!-- 页面主体 -->
     <el-container>
@@ -67,10 +70,12 @@ export default {
         145: 'iconfont icon-baobiao'
       },
       isCollapse: false,
-      activePath: ''
+      activePath: '',
+      user_name: ''
     }
   },
   created () {
+    this.user_name = window.sessionStorage.getItem('user_name')
     this.getMenuList()
     this.activePath = window.sessionStorage.getItem('activePath')
   },
@@ -143,5 +148,9 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
+}
+.user_name{
+  font-size: 16px;
+  margin-right: 20px;
 }
 </style>

@@ -4,12 +4,12 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
-      <el-breadcrumb-item>添加商品</el-breadcrumb-item>
+      <el-breadcrumb-item>{{goodsId ? '修改' : '添加'}}商品</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片区域 -->
     <el-card>
       <el-alert
-        title="添加商品信息"
+        :title="goodsId ? '修改商品信息' : '添加商品信息'"
         type="info"
         center show-icon
         :closable="false">
@@ -82,7 +82,7 @@
             <quill-editor
               v-model="addForm.goods_introduce">
             </quill-editor>
-            <el-button type="primary" class="btn_add" @click="addGoodsBtn">添加商品</el-button>
+            <el-button type="primary" class="btn_add" @click="addGoodsBtn">{{goodsId ? '修改' : '添加'}}商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -104,6 +104,7 @@ export default {
   name: 'addGoods',
   data () {
     return {
+      goodsId: 0,
       activeIndex: '0',
       addForm: {
         goods_name: '',
@@ -159,7 +160,11 @@ export default {
     }
   },
   created () {
+    this.goodsId = this.$route.params.goodsId
     this.getCateList()
+    if (this.goodsId) {
+      this.getGoodsInfo(this.goodsId)
+    }
   },
   methods: {
     async getCateList () {
@@ -168,6 +173,19 @@ export default {
         return this.$message.error('获取商品分类失败')
       }
       this.cateList = res.data
+    },
+    // 如果是修改商品页面,则获取商品信息
+    async getGoodsInfo (id) {
+      const { data: res } = await this.$http.get(`/goods/${id}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取商品信息失败')
+      }
+      this.addForm.goods_name = res.data.goods_name
+      this.addForm.goods_price = res.data.goods_price
+      this.addForm.goods_weight = res.data.goods_weight
+      this.addForm.goods_number = res.data.goods_number
+      this.addForm.pics = res.data.pics
+      this.addForm.goods_introduce = res.data.goods_introduce
     },
     // 级联选择器选择项变化
     handleChange () {
@@ -244,13 +262,22 @@ export default {
           this.addForm.attrs.push(newInfo)
         })
         form.attrs = this.addForm.attrs
-        // 发起请求,添加商品
-        const { data: res } = await this.$http.post('/goods', form)
-        if (res.meta.status !== 201) {
-          return this.$message.error('添加商品失败')
+        // 发起请求,添加 / 修改商品
+        if (this.goodsId) {
+          const { data: res } = await this.$http.put(`goods/${this.goodsId}`, form)
+          if (res.meta.status !== 200) {
+            return this.$message.error('修改商品失败')
+          }
+          this.$message.success('修改商品成功')
+          this.$router.push('/goods')
+        } else {
+          const { data: res } = await this.$http.post('/goods', form)
+          if (res.meta.status !== 201) {
+            return this.$message.error('添加商品失败')
+          }
+          this.$message.success('添加商品成功')
+          this.$router.push('/goods')
         }
-        this.$message.success('添加商品成功')
-        this.$router.push('/goods')
       })
     }
   }

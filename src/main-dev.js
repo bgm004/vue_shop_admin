@@ -12,9 +12,20 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+// 请求显示进度条
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1'
+// axios 请求拦截器
 axios.interceptors.request.use(config => {
+  NProgress.start()
   config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
+// axios 响应拦截器
+axios.interceptors.response.use(config => {
+  NProgress.done()
   return config
 })
 

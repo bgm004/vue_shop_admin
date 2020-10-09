@@ -1,6 +1,11 @@
 # vue_shop_admin
 
+**基于vue+element ui 的后台管理系统**
+
+**demo** : [https://vue-admin-kappa.vercel.app/](https://vue-admin-kappa.vercel.app/)
+
 ## Project setup
+
 ```
 yarn install
 ```
